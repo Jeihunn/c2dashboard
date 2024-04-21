@@ -41,7 +41,22 @@
                 </div>
             </div>
         {% endif %}
-    
+
+        <!-- Command Form -->
+        {% if connected_agents and server_process is not None %}
+            <div class="row mt-4">
+                <div class="col">
+                    <form action="{% url 'send_command' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="command" class="form-label">Enter command:</label>
+                            <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Command</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
 
         <div class="row mt-4">
             <div class="col">

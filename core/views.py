@@ -4,6 +4,7 @@ from subprocess import Popen
 from server import HOST, PORT, list_clients, remove_all_clients
 from django.contrib import messages
 import psutil
+import socket
 
 # Global variable
 server_process = None
@@ -45,4 +46,14 @@ def stop_server(request):
         messages.error(request, 'Server is not running')
         print('Server is not running')
     remove_all_clients()
+    return redirect('start_server')
+
+
+def send_command(request):
+    command = request.POST.get('command')
+    if command:
+        responses = {}
+        for agent_id in list_clients():
+            print("Agent ID:", agent_id)
+        print("Responses:", responses)
     return redirect('start_server')

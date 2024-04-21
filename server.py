@@ -1,3 +1,4 @@
+import os
 import socket
 import threading
 import json
@@ -10,6 +11,9 @@ CLIENTS_FILE = "connected_clients.json"
 
 
 def load_clients():
+    if not os.path.exists(CLIENTS_FILE):
+        with open(CLIENTS_FILE, "w") as file:
+            json.dump({}, file)
     try:
         with open(CLIENTS_FILE, "r") as file:
             return json.load(file)
@@ -24,10 +28,20 @@ def save_clients(clients):
 
 def add_client(client_id, client_socket):
     clients = load_clients()
-    clients[client_id] = {"socket": client_socket.fileno(
-    ), "address": client_socket.getpeername()}
+    client_info = {
+        "socket": {
+            "fd": client_socket.fileno(),
+            "family": client_socket.family,
+            "type": client_socket.type,
+            "proto": client_socket.proto,
+            "laddr": client_socket.getsockname(),
+            "raddr": client_socket.getpeername()
+        },
+        "address": client_socket.getpeername()
+    }
+    clients[client_id] = client_info
     save_clients(clients)
-    print(f"Connected agents: {list_clients()}")
+    print(f"\nConnected agents: {list_clients()}")
 
 
 def remove_client(client_id):
@@ -35,14 +49,14 @@ def remove_client(client_id):
     if client_id in clients:
         del clients[client_id]
         save_clients(clients)
-        print(f"Connected agents: {list_clients()}")
+        print(f"\nConnected agents: {list_clients()}")
 
 
 def remove_all_clients():
     clients = load_clients()
     clients.clear()
     save_clients(clients)
-    print(f"Connected agents: {list_clients()}")
+    print(f"\nConnected agents: {list_clients()}")
 
 
 def list_clients():
@@ -70,7 +84,7 @@ class AgentHandler(threading.Thread):
                 if command.lower() == "exit":
                     break
                 response = self.agent_socket.recv(4096).decode()
-                print(f"Response from agent {self.agent_address}:")
+                print(f"\nResponse from agent {self.agent_address}:")
                 print(response)
         except Exception as e:
             print(f"Error communicating with agent {self.agent_address}: {e}")
