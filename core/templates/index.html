@@ -12,6 +12,7 @@
 <body>
 
     <div class="container">
+        {% include 'includes/messages.html' %}
         <div class="jumbotron">
             <h1 class="display-4 text-center">Server Control Panel</h1>
             <p class="lead text-center">Status: {% if server_process %}Running{% else %}Stopped{% endif %}</p>
@@ -28,17 +29,22 @@
                             <span class="badge bg-primary rounded-pill">Connected</span>
                         </li>
                         {% endfor %}
-
                     </ul>
                 </div>
             </div>
         {% else %}
-            <p class="text-center">No agents connected</p>
+            <div class="row">
+                <div class="col">
+                    <div class="alert alert-info" role="alert">
+                        No agents connected
+                    </div>
+                </div>
+            </div>
         {% endif %}
+    
 
         <div class="row mt-4">
             <div class="col">
-                {% include 'includes/messages.html' %}
                 {% if server_process is None %}
                     <form action="{% url 'start_server' %}" method="post">
                         {% csrf_token %}
