@@ -13,13 +13,19 @@
     
     <div class="container">
         <h1 class="text-center"></h1>
+        <h3>{{server_process}}</h3>
         <div class="row">
             <div class="col">
                 {% include 'includes/messages.html' %}
+                {% if server_process is None %}
                 <form method="post">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">Start server</button>
                 </form>
+                {% else %}
+                    <a href="{% url 'stop_server' %}" class="btn btn-danger">Stop server</a>
+                {% endif %}
+
             </div>
         </div>
         <div class="row">
