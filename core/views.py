@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from subprocess import Popen
-from server import HOST, PORT
+from server import HOST, PORT, list_clients, remove_all_clients
 from django.contrib import messages
 import psutil
 
@@ -11,6 +11,7 @@ server_process = None
 
 def start_server(request):
     global server_process
+    connected_agents = list_clients()  # Get the list of connected clients
     if request.method == 'POST':
         try:
             global server_process
@@ -19,7 +20,11 @@ def start_server(request):
             messages.success(request, f'Server listening on {HOST}:{PORT}')
         except Exception as e:
             messages.error(request, f'Error starting server: {e}')
-    return render(request, 'index.html', {'server_process': server_process})
+    context = {
+        'connected_agents': connected_agents,
+        'server_process': server_process
+    }
+    return render(request, 'index.html', context)
 
 
 def stop_server(request):
@@ -39,4 +44,5 @@ def stop_server(request):
     else:
         messages.error(request, 'Server is not running')
         print('Server is not running')
+    remove_all_clients()
     return redirect('start_server')
