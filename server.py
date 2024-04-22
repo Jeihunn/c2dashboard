@@ -76,8 +76,7 @@ class AgentHandler(threading.Thread):
         print(f"\nNew agent connected: {self.agent_address}")
         try:
             while True:
-                command = input(
-                    "\nEnter command to send to agent (type 'exit' to disconnect): ").strip()
+                command = input("\nEnter command to send to agent (type 'exit' to disconnect): ").strip()
                 if not command:
                     continue
                 self.agent_socket.send(command.encode())
@@ -99,6 +98,7 @@ def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
+        remove_all_clients()
         server_socket.bind((HOST, PORT))
         server_socket.listen(5)
         print(f"\nServer listening on {HOST}:{PORT}")
