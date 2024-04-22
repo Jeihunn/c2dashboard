@@ -50,10 +50,8 @@ def stop_server(request):
 
 
 def send_command(request):
-    command = request.POST.get('command')
-    if command:
-        responses = {}
-        for agent_id in list_clients():
-            print("Agent ID:", agent_id)
-        print("Responses:", responses)
+    if request.method == 'POST':
+        command = request.POST.get('command')
+        if command:
+            print(f'Sending command: {command}')
     return redirect('start_server')

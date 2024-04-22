@@ -6,7 +6,7 @@ import json
 HOST = "0.0.0.0"  # Set your host
 PORT = 8888  # Set your port
 
-# Dosya adı
+# File name
 CLIENTS_FILE = "connected_clients.json"
 
 
@@ -73,11 +73,11 @@ class AgentHandler(threading.Thread):
         self.agent_id = f"{agent_address[0]}:{agent_address[1]}"
 
     def run(self):
-        print(f"New agent connected: {self.agent_address}")
+        print(f"\nNew agent connected: {self.agent_address}")
         try:
             while True:
                 command = input(
-                    "Enter command to send to agent (type 'exit' to disconnect): ").strip()
+                    "\nEnter command to send to agent (type 'exit' to disconnect): ").strip()
                 if not command:
                     continue
                 self.agent_socket.send(command.encode())
@@ -87,10 +87,10 @@ class AgentHandler(threading.Thread):
                 print(f"\nResponse from agent {self.agent_address}:")
                 print(response)
         except Exception as e:
-            print(f"Error communicating with agent {self.agent_address}: {e}")
+            print(f"\nError communicating with agent {self.agent_address}: {e}")
         finally:
             self.agent_socket.close()
-            print(f"Agent {self.agent_address} disconnected")
+            print(f"\nAgent {self.agent_address} disconnected")
             # Remove the client from the list when disconnected
             remove_client(self.agent_id)
 
@@ -101,7 +101,7 @@ def main():
     try:
         server_socket.bind((HOST, PORT))
         server_socket.listen(5)
-        print(f"Server listening on {HOST}:{PORT}")
+        print(f"\nServer listening on {HOST}:{PORT}")
         while True:
             agent_socket, agent_address = server_socket.accept()
             agent_handler = AgentHandler(agent_socket, agent_address)
@@ -109,7 +109,7 @@ def main():
             # Add the client to the list
             add_client(agent_handler.agent_id, agent_socket)
     except KeyboardInterrupt:
-        print("Server shutting down...")
+        print("\nServer shutting down...")
     finally:
         server_socket.close()
 
