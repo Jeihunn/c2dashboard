@@ -10,28 +10,71 @@
 </head>
 
 <body>
-    
+
     <div class="container">
-        <h1 class="text-center"></h1>
-        <div class="row">
-            <div class="col">
-                {% include 'includes/messages.html' %}
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Start server</button>
-                </form>
-            </div>
+        {% include 'includes/messages.html' %}
+        <div class="jumbotron">
+            <h1 class="display-4 text-center">Server Control Panel</h1>
+            <p class="lead text-center">Status: {% if server_process %}Running{% else %}Stopped{% endif %}</p>
         </div>
-        <div class="row">
+
+        {% if connected_agents %}
+            <div class="row">
+                <div class="col">
+                    <h2>Connected Agents:</h2>
+                    <ul class="list-group">
+                        {% for agent in connected_agents %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ agent }}
+                            <span class="badge bg-primary rounded-pill">Connected</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col">
+                    <div class="alert alert-info" role="alert">
+                        No agents connected
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Command Form -->
+        {% if connected_agents and server_process is not None %}
+            <div class="row mt-4">
+                <div class="col">
+                    <form action="{% url 'send_command' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="command" class="form-label">Enter command:</label>
+                            <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Command</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row mt-4">
             <div class="col">
-                <ul>
-                    {% for client in clients %}
-                        <li>Host: {{ client.host }}, Port: {{ client.port }}</li>
-                    {% endfor %}
-                </ul>
+                {% if server_process is None %}
+                    <form action="{% url 'start_server' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Start Server</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'stop_server' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Stop Server</button>
+                    </form>
+                {% endif %}
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
         integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
     </script>

