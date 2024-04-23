@@ -26,7 +26,7 @@ def save_clients(clients):
         json.dump(clients, file)
 
 
-def add_client(client_id, client_socket):
+def add_client(client_id, client_socket, username):
     clients = load_clients()
     client_info = {
         "socket": {
@@ -37,7 +37,9 @@ def add_client(client_id, client_socket):
             "laddr": client_socket.getsockname(),
             "raddr": client_socket.getpeername()
         },
-        "address": client_socket.getpeername()
+        "address": client_socket.getpeername(),
+        "username": username
+        
     }
     clients[client_id] = client_info
     save_clients(clients)
@@ -62,6 +64,7 @@ def remove_all_clients():
 def list_clients():
     clients = load_clients()
     return list(clients.keys())
+
 
 
 class AgentHandler(threading.Thread):
@@ -97,6 +100,7 @@ class AgentHandler(threading.Thread):
 def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+
     try:
         remove_all_clients()
         server_socket.bind((HOST, PORT))
@@ -105,9 +109,10 @@ def main():
         while True:
             agent_socket, agent_address = server_socket.accept()
             agent_handler = AgentHandler(agent_socket, agent_address)
+            username = agent_socket.recv(4096).decode()
             agent_handler.start()
             # Add the client to the list
-            add_client(agent_handler.agent_id, agent_socket)
+            add_client(agent_handler.agent_id, agent_socket, username)
     except KeyboardInterrupt:
         print("\nServer shutting down...")
     finally:

