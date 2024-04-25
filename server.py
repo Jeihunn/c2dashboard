@@ -2,6 +2,8 @@ import os
 import socket
 import threading
 import json
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 HOST = "0.0.0.0"  # Set your host
 PORT = 8888  # Set your port
@@ -39,11 +41,11 @@ def add_client(client_id, client_socket, username):
         },
         "address": client_socket.getpeername(),
         "username": username
-        
     }
     clients[client_id] = client_info
     save_clients(clients)
     print(f"\nConnected agents: {list_clients()}")
+    send_clients_info_to_group()
 
 
 def remove_client(client_id):
@@ -52,6 +54,7 @@ def remove_client(client_id):
         del clients[client_id]
         save_clients(clients)
         print(f"\nConnected agents: {list_clients()}")
+        send_clients_info_to_group()
 
 
 def remove_all_clients():
@@ -66,6 +69,16 @@ def list_clients():
     return list(clients.keys())
 
 
+def send_clients_info_to_group():
+    # Send updated client list to clients via WebSocket
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "client_list_group",
+        {
+            "type": "send_clients_info"
+        }
+    )
+
 
 class AgentHandler(threading.Thread):
     def __init__(self, agent_socket, agent_address):
@@ -79,7 +92,8 @@ class AgentHandler(threading.Thread):
         print(f"\nNew agent connected: {self.agent_address}")
         try:
             while True:
-                command = input("\nEnter command to send to agent (type 'exit' to disconnect): ").strip()
+                command = input(
+                    "\nEnter command to send to agent (type 'exit' to disconnect): ").strip()
                 if not command:
                     continue
                 self.agent_socket.send(command.encode())
@@ -89,7 +103,8 @@ class AgentHandler(threading.Thread):
                 print(f"\nResponse from agent {self.agent_address}:")
                 print(response)
         except Exception as e:
-            print(f"\nError communicating with agent {self.agent_address}: {e}")
+            print(
+                f"\nError communicating with agent {self.agent_address}: {e}")
         finally:
             self.agent_socket.close()
             print(f"\nAgent {self.agent_address} disconnected")
@@ -99,7 +114,6 @@ class AgentHandler(threading.Thread):
 
 def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 
     try:
         remove_all_clients()

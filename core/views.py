@@ -40,9 +40,11 @@ def stop_server(request):
                 print('Server stopped successfully')
                 break
         else:
+            server_process = None
             messages.error(request, 'Server process not found')
             print('Server process not found')
     else:
+        server_process = None
         messages.error(request, 'Server is not running')
         print('Server is not running')
     remove_all_clients()
