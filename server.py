@@ -28,7 +28,7 @@ def save_clients(clients):
         json.dump(clients, file)
 
 
-def add_client(client_id, client_socket, username):
+def add_client(client_id, client_socket, username, client_os):
     clients = load_clients()
     client_info = {
         "socket": {
@@ -40,7 +40,8 @@ def add_client(client_id, client_socket, username):
             "raddr": client_socket.getpeername()
         },
         "address": client_socket.getpeername(),
-        "username": username
+        "username": username,
+        "os": client_os
     }
     clients[client_id] = client_info
     save_clients(clients)
@@ -124,9 +125,10 @@ def main():
             agent_socket, agent_address = server_socket.accept()
             agent_handler = AgentHandler(agent_socket, agent_address)
             username = agent_socket.recv(4096).decode()
+            client_os = agent_socket.recv(4096).decode()
             agent_handler.start()
             # Add the client to the list
-            add_client(agent_handler.agent_id, agent_socket, username)
+            add_client(agent_handler.agent_id, agent_socket, username, client_os)
     except KeyboardInterrupt:
         print("\nServer shutting down...")
     finally:

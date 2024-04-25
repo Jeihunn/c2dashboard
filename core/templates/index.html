@@ -25,15 +25,25 @@
             {% if connected_agents %}
                 <div class="row">
                     <div class="col">
-                        <h2>Connected Agents:</h2>
-                        <ul class="list-group">
-                            {% for agent in connected_agents %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ agent }} 
-                                <span class="badge bg-primary rounded-pill">Connected</span>
-                            </li>
+                        <h2>Connected Agents ({{ connected_agents|length }}):</h2>
+                        <div class="accordion" id="connectedAgentsAccordion">
+                            {% for agent_id, agent_info in connected_agents.items %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                        {{ agent_id }} 
+                                        <span class="badge bg-primary rounded-pill ms-4">Connected</span>
+                                    </button>
+                                    </h2>
+                                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <p>Username: {{ agent_info.username }}</p>
+                                        <p>OS: {{ agent_info.os }}</p>
+                                    </div>
+                                    </div>
+                                </div>
                             {% endfor %}
-                        </ul>
+                          </div>    
                     </div>
                 </div>
             {% else %}

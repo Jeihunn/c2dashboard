@@ -12,8 +12,9 @@ function onSocketMessage(event) {
   console.log("data", data);
 
   const agents = data.agents;
+  const agentCount = Object.keys(agents).length;
 
-  if (agents.length === 0) {
+  if (agentCount === 0) {
     showNoAgentsMessage();
     clearCommandForm();
   } else {
@@ -48,32 +49,65 @@ function clearCommandForm() {
 
 // Function to display connected agents
 function showConnectedAgents(agents) {
+  // First, let's clear the existing content
   clientsInfo.innerHTML = "";
 
+  // Create a heading
   const heading = document.createElement("h2");
-  heading.textContent = "Connected Agents:";
+  heading.textContent = `Connected Agents (${Object.keys(agents).length}):`;
   clientsInfo.appendChild(heading);
 
-  const ul = document.createElement("ul");
-  ul.classList.add("list-group");
+  // Create an accordion
+  const accordion = document.createElement("div");
+  accordion.classList.add("accordion");
+  accordion.id = "connectedAgentsAccordion";
 
-  agents.forEach((agent) => {
-    const listItem = document.createElement("li");
-    listItem.classList.add(
-      "list-group-item",
-      "d-flex",
-      "justify-content-between",
-      "align-items-center"
-    );
-    listItem.textContent = agent;
+  // Create an accordion item for each agent
+  Object.entries(agents).forEach(([agentId, agentInfo], index) => {
+    const accordionItem = document.createElement("div");
+    accordionItem.classList.add("accordion-item");
+
+    // Accordion header
+    const accordionHeader = document.createElement("h2");
+    accordionHeader.classList.add("accordion-header");
+
+    const button = document.createElement("button");
+    button.classList.add("accordion-button", "collapsed");
+    button.type = "button";
+    button.setAttribute("data-bs-toggle", "collapse");
+    button.setAttribute("data-bs-target", `#collapse${index + 1}`);
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-controls", `collapse${index + 1}`);
+    button.textContent = agentId;
+
     const badge = document.createElement("span");
-    badge.classList.add("badge", "bg-primary", "rounded-pill");
+    badge.classList.add("badge", "bg-primary", "rounded-pill", "ms-4");
     badge.textContent = "Connected";
-    listItem.appendChild(badge);
-    ul.appendChild(listItem);
+    button.appendChild(badge);
+
+    accordionHeader.appendChild(button);
+    accordionItem.appendChild(accordionHeader);
+
+    // Accordion body
+    const accordionBody = document.createElement("div");
+    accordionBody.id = `collapse${index + 1}`;
+    accordionBody.classList.add("accordion-collapse", "collapse");
+
+    const bodyContent = document.createElement("div");
+    bodyContent.classList.add("accordion-body");
+    bodyContent.innerHTML = `
+      <p>Username: ${agentInfo.username}</p>
+      <p>OS: ${agentInfo.os}</p>
+    `;
+
+    accordionBody.appendChild(bodyContent);
+    accordionItem.appendChild(accordionBody);
+
+    // Akordionı ana akordiyon alanına ekleyelim
+    accordion.appendChild(accordionItem);
   });
 
-  clientsInfo.appendChild(ul);
+  clientsInfo.appendChild(accordion);
 }
 
 // Function to render the command form
