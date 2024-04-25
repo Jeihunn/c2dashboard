@@ -1,10 +1,8 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
 from subprocess import Popen
-from server import HOST, PORT, list_clients, remove_all_clients
+from server import HOST, PORT, load_clients, remove_all_clients
 from django.contrib import messages
 import psutil
-import socket
 
 # Global variable
 server_process = None
@@ -12,7 +10,16 @@ server_process = None
 
 def start_server(request):
     global server_process
-    connected_agents = list_clients()  # Get the list of connected clients
+    clients = load_clients()
+    formatted_clients = {
+        client_id: {
+            "address": clients[client_id]["address"],
+            "username": clients[client_id]["username"],
+            "os": clients[client_id]["os"]
+        }
+        for client_id in clients
+    }
+    connected_agents = formatted_clients  # Get the list of connected clients
     if request.method == 'POST':
         try:
             global server_process

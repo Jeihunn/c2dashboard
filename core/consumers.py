@@ -1,7 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
 from asgiref.sync import async_to_sync
-from server import list_clients
+from server import load_clients
 
 
 class ClientConsumer(WebsocketConsumer):
@@ -23,5 +23,13 @@ class ClientConsumer(WebsocketConsumer):
         pass
 
     def send_clients_info(self, event):
-        clients = list_clients()
-        self.send(text_data=json.dumps({'agents': clients}))
+        clients = load_clients()
+        formatted_clients = {
+            client_id: {
+                "address": clients[client_id]["address"],
+                "username": clients[client_id]["username"],
+                "os": clients[client_id]["os"]
+            }
+            for client_id in clients
+        }
+        self.send(text_data=json.dumps({'agents': formatted_clients}))
