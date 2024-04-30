@@ -11,6 +11,9 @@ PORT = 8888  # Set your port
 # File name
 CLIENTS_FILE = "connected_clients.json"
 
+# client socket objects list
+client_sockets = []
+
 
 def load_clients():
     if not os.path.exists(CLIENTS_FILE):
@@ -28,7 +31,10 @@ def save_clients(clients):
         json.dump(clients, file)
 
 
+
 def add_client(client_id, client_socket, username, client_os):
+    client_sockets.append(client_socket)
+    print(f"\nClient sockets: {client_sockets}")
     clients = load_clients()
     client_info = {
         "socket": {
@@ -44,6 +50,7 @@ def add_client(client_id, client_socket, username, client_os):
         "os": client_os
     }
     clients[client_id] = client_info
+    
     save_clients(clients)
     print(f"\nConnected agents: {list_clients()}")
     send_clients_info_to_group()
