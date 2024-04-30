@@ -59,36 +59,85 @@ def stop_server(request):
     return redirect('start_server')
 
 
+
+import json 
+
+def generate_active_sockets():
+    active_sockets = {}
+    with open('connected_clients.json', 'r') as json_file:
+        clients = json.load(json_file)
+        for client_id, client_info in clients.items():
+            try:
+                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                client_socket.connect((client_info['address'][0], client_info['address'][1]))
+                active_sockets[client_id] = client_socket
+            except Exception as e:
+                print(f'Error connecting to {client_info["username"]}: {e}')
+    return active_sockets
+
 def send_command(request):
+    # active_sockets = generate_active_sockets()
+    # print(active_sockets)
+    
     if request.method == 'POST':
-        # Retrieve the command from the request
         command = request.POST.get('command', '')
         if not command:
             messages.error(request, 'Command cannot be empty')
             return redirect('start_server')
 
-        # Get the list of connected clients
-        clients = load_clients()
+        with open('connected_clients.json', 'r') as json_file:
+            clients = json.load(json_file)
 
-        # Iterate over connected clients and send the command
         for client_id, client_info in clients.items():
-            try:
-                # Connect to the client
-                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client_socket.connect((client_info["address"][0], int(client_info["address"][1])))
+         
+            # if client_id in active_sockets:
+                try:
+                    # client_socket = active_sockets[client_id]
+                    client_info.send(command.encode())
 
-                # Send the command to the client
-                client_socket.send(command.encode())
-                
-                # Close the connection
-                client_socket.close()
-                
-                # Optionally, you might want to collect responses from clients
-                # and handle them accordingly
-                
-                messages.success(request, f'Command "{command}" sent to {client_info["username"]}')
-            except Exception as e:
-                messages.error(request, f'Error sending command to {client_info["username"]}: {e}')
-    
-    # Redirect back to the start_server view
+                    # Optionally, wait for a response here if needed
+                    response = client_info.recv(4096).decode()
+                    messages.success(request, f'Response from {client_info["username"]}: {response}')
+
+                except Exception as e:
+                    messages.error(request, f'Error sending command to {client_info["username"]}: {e}')
+            # else:
+            #     messages.error(request, f'No active connection for {client_info["username"]}')
+
     return redirect('start_server')
+
+
+
+# def send_command(request):
+#     if request.method == 'POST':
+#         command = request.POST.get('command', '')
+#         print(type(command))
+#         if not command:
+#             messages.error(request, 'Command cannot be empty')
+#             return redirect('start_server')
+
+#         clients = load_clients()
+
+#         for client_id, client_info in clients.items():
+#             try:
+#                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#                 client_socket.settimeout(5)  # Setting a timeout for connection and response
+                
+#                 client_address = (client_info["address"][0], int(client_info["address"][1]))
+#                 client_socket.connect(client_address)
+#                 client_socket.send(command.encode())
+
+#                 # Here you could add code to receive a response
+#                 # response = client_socket.recv(4096).decode()
+#                 # print(f'Response from {client_info["username"]}: {response}')
+
+#                 client_socket.close()
+#                 messages.success(request, f'Command "{command}" sent to {client_info["username"]}')
+#             except socket.timeout:
+#                 messages.error(request, f'Timeout when connecting to {client_info["username"]}')
+#             except Exception as e:
+#                 messages.error(request, f'Error sending command to {client_info["username"]}: {e}')
+#             finally:
+#                 client_socket.close()  # Ensure the socket is closed even if an error occurs
+
+#     return redirect('start_server')
