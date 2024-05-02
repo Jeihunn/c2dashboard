@@ -5,6 +5,7 @@ from django.contrib import messages
 import psutil
 import socket
 
+
 # Global variable
 server_process = None
 
@@ -27,6 +28,7 @@ def start_server(request):
             # Start your server
             server_process = Popen(['python', 'server.py'])
             messages.success(request, f'Server listening on {HOST}:{PORT}')
+
         except Exception as e:
             messages.error(request, f'Error starting server: {e}')
     context = {
@@ -60,7 +62,7 @@ def stop_server(request):
 
 
 import json
-from server import client_sockets
+
 
 def generate_active_sockets():
     active_sockets = {}
@@ -78,41 +80,13 @@ def generate_active_sockets():
     return active_sockets
 
 
-from server import client_sockets
-
+# from server import client_sockets, count
+from client import client_socket
+from core.tests import count
 
 def send_command(request):
-    print('Client sockets send command', client_sockets)
-    # active_sockets = generate_active_sockets()
-    # print('activeeeee', active_sockets)
-    
-    # if request.method == 'POST':
-    #     command = request.POST.get('command', '')
-    #     if not command:
-    #         messages.error(request, 'Command cannot be empty')
-    #         return redirect('start_server')
-
-    #     with open('connected_clients.json', 'r') as json_file:
-    #         clients = json.load(json_file)
-
-    #     for client_id, client_info in clients.items():
-         
-    #         if client_id in active_sockets:
-    #             try:
-    #                 client_socket_info = active_sockets[client_id]
-    #                 client_info = socket.socket(client_socket_info['family'], client_socket_info['type'], client_socket_info['proto'])
-    #                 client_info.connect((client_socket_info['raddr'][0], client_socket_info['raddr'][1]))
-    #                 print(type(client_info))
-    #                 print("Client object",client_info)
-    #                 client_info.send(b'pwd')
-    #                 # Optionally, wait for a response here if needed
-    #                 response = client_info.recv(4096).decode()
-    #                 messages.success(request, f'Response from {client_info["username"]}: {response}')
-
-    #             except Exception as e:
-    #                 messages.error(request, f'Error sending command to {client_info["username"]}: {e}')
-    #         else:
-    #             messages.error(request, f'No active connection for {client_info["username"]}')
+    print('Client sockets send command', client_socket)
+    print('Count', count)
 
     return redirect('start_server')
 

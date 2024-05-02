@@ -12,7 +12,11 @@ PORT = 8888  # Set your port
 CLIENTS_FILE = "connected_clients.json"
 
 # client socket objects list
-client_sockets = []
+# global client_sockets
+# client_sockets = []
+
+# global count
+# count = 0
 
 
 def load_clients():
@@ -48,10 +52,13 @@ def add_client(client_id, client_socket, username, client_os):
         "os": client_os
     }
     clients[client_id] = client_info
-    
     save_clients(clients)
     print(f"\nConnected agents: {list_clients()}")
     send_clients_info_to_group()
+    # global client_sockets
+    # client_sockets.append(client_socket)
+    # global count
+    # count = 5
 
 
 def remove_client(client_id):
@@ -131,8 +138,7 @@ def main():
             agent_handler = AgentHandler(agent_socket, agent_address)
             username = agent_socket.recv(4096).decode()
             client_os = agent_socket.recv(4096).decode()
-            client_sockets.append(agent_socket)
-            print('Client sockets inside the main function', client_sockets)
+            
             agent_handler.start()
             # Add the client to the list
             add_client(agent_handler.agent_id, agent_socket, username, client_os)
