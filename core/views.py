@@ -85,12 +85,19 @@ def generate_active_sockets():
 from client import client_socket
 from core.tests import count
 
+from django.core.cache import cache
+
 def send_command(request):
+    connected_agents = cache.get('connected_agents', [])
+
     print('Client sockets send command', client_socket)
     print('Count', count)
-
+    
+    counter = 1
+    for client_info in connected_agents:
+        print(f'{counter}. VIEW Client SOCKET', client_info)
+        counter += 1
     return redirect('start_server')
-
 
 
 

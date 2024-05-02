@@ -4,6 +4,7 @@ import threading
 import json
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.core.cache import cache
 
 HOST = "0.0.0.0"  # Set your host
 PORT = 8888  # Set your port
@@ -61,6 +62,13 @@ def add_client(client_id, client_socket, username, client_os):
     # count = 5
 
 
+    print("=====CLIENT SOCKET", client_socket)
+    print("=====CLIENT SOCKET TYPE", type(client_socket))
+    connected_agents = cache.get('connected_agents', [])
+    connected_agents.append(client_socket.getpeername())  # ADD ADDRESS
+    cache.set('connected_agents', connected_agents)
+
+
 def remove_client(client_id):
     clients = load_clients()
     if client_id in clients:
@@ -75,6 +83,8 @@ def remove_all_clients():
     clients.clear()
     save_clients(clients)
     print(f"\nConnected agents: {list_clients()}")
+
+    cache.set('connected_agents', [])
 
 
 def list_clients():
