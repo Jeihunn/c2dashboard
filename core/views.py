@@ -59,23 +59,7 @@ def stop_server(request):
     return redirect('start_server')
 
 
-
-import json 
-
-def generate_active_sockets():
-    active_sockets = {}
-    with open('connected_clients.json', 'r') as json_file:
-        clients = json.load(json_file)
-        for client_id, client_info in clients.items():
-            try:
-                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client_socket.connect((client_info['address'][0], client_info['address'][1]))
-                active_sockets[client_id] = client_socket
-            except Exception as e:
-                print(f'Error connecting to {client_info["username"]}: {e}')
-    return active_sockets
-
-import json 
+import json
 from server import client_sockets
 
 def generate_active_sockets():
@@ -93,10 +77,12 @@ def generate_active_sockets():
                 print(f'No socket information found for {client_info["username"]}')
     return active_sockets
 
+
 from server import client_sockets
 
+
 def send_command(request):
-    print(client_sockets)
+    print('Client sockets send command', client_sockets)
     # active_sockets = generate_active_sockets()
     # print('activeeeee', active_sockets)
     
@@ -131,7 +117,6 @@ def send_command(request):
     return redirect('start_server')
 
 
-    return redirect('start_server')
 
 
 

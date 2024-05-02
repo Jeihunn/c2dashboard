@@ -33,8 +33,6 @@ def save_clients(clients):
 
 
 def add_client(client_id, client_socket, username, client_os):
-    client_sockets.append(client_socket)
-    print(f"\nClient sockets: {client_sockets}")
     clients = load_clients()
     client_info = {
         "socket": {
@@ -133,6 +131,8 @@ def main():
             agent_handler = AgentHandler(agent_socket, agent_address)
             username = agent_socket.recv(4096).decode()
             client_os = agent_socket.recv(4096).decode()
+            client_sockets.append(agent_socket)
+            print('Client sockets inside the main function', client_sockets)
             agent_handler.start()
             # Add the client to the list
             add_client(agent_handler.agent_id, agent_socket, username, client_os)
