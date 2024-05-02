@@ -2,8 +2,8 @@ import socket
 import subprocess
 import platform
 import getpass  # Module to get the username
-global client_socket
-client_socket = ''
+# global client_socket
+client_socket = None
 
 def execute_command(command):
     try:
@@ -14,7 +14,7 @@ def execute_command(command):
     
 def get_client_socket(socket):
     global client_socket
-    client_socket = str(socket)
+    client_socket = socket
     return client_socket
 
 def main():
