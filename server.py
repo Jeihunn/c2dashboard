@@ -64,6 +64,7 @@ def remove_all_clients():
     clients.clear()
     save_clients(clients)
     print(f"\nConnected agents: {list_clients()}")
+    send_clients_info_to_group()
 
 
 def list_clients():
@@ -95,12 +96,11 @@ class AgentHandler(threading.Thread):
         try:
             while True:
                 command = cache.get('command', '')
-                cache.set('command', '')
                 if not command:
                     continue
                 self.agent_socket.send(command.encode())
+                cache.set('command', '')
                 if command.lower() == "exit":
-                    remove_client(self.agent_id)
                     break
                 response = self.agent_socket.recv(4096).decode()
                 print(
@@ -112,7 +112,7 @@ class AgentHandler(threading.Thread):
             self.agent_socket.close()
             print(f"\nAgent {self.agent_address} disconnected")
             # Remove the client from the list when disconnected
-            remove_client(self.agent_id)
+            remove_all_clients()
 
 
 def main():
