@@ -80,6 +80,23 @@
             {% endif %}
         </div>
 
+        {% if command_responses %}
+            <div class="response-container my-4">
+                <div class="response-header">Command Responses:</div>
+                <div class="terminal-output">
+                    {% if command_responses %}
+                        <ul class="response-list">
+                            {% for client_address, directory_path in command_responses.items %}
+                                <li><span class="command">{{ client_address }}:</span> <span class="directory">{{ directory_path }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="no-response">No command responses available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
         <div class="row mt-4">
             <div class="col">
                 {% if server_process is None %}
@@ -95,23 +112,6 @@
                 {% endif %}
             </div>
         </div>
-
-        {% if command_responses %}
-            <div>
-                <div>Command Responses:</div>
-                <div class="terminal-output">
-                    {% if command_responses %}
-                        <ul>
-                            {% for client_address, directory_path in command_responses.items %}
-                                <li><span class="command">{{ client_address }}:</span> <span class="directory">{{ directory_path }}</span></li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No command responses available.</p>
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
     </div>
 
 
