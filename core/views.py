@@ -55,6 +55,7 @@ def stop_server(request):
         server_process = None
         messages.error(request, 'Server is not running')
         print('Server is not running')
+    cache.set('command_responses', {})
     remove_all_clients()
     return redirect('start_server')
 

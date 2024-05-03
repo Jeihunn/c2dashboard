@@ -8,6 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <title>Server</title>
 </head>
 
@@ -63,7 +66,7 @@
                 <div class="command-form">
                     <div class="row mt-4">
                         <div class="col">
-                            <form action="{% url 'send_command' %}" method="post">
+                            <form method="post" action="{% url 'send_command' %}">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     <label for="command" class="form-label">Enter command:</label>
@@ -93,6 +96,22 @@
             </div>
         </div>
 
+        {% if command_responses %}
+            <div>
+                <div>Command Responses:</div>
+                <div class="terminal-output">
+                    {% if command_responses %}
+                        <ul>
+                            {% for client_address, directory_path in command_responses.items %}
+                                <li><span class="command">{{ client_address }}:</span> <span class="directory">{{ directory_path }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No command responses available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
     </div>
 
 

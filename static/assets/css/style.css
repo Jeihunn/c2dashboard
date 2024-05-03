@@ -1,0 +1,15 @@
+.terminal-output {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.command {
+    color: #569cd6;
+}
+
+.directory {
+    color: #9cdcfe;
+}

