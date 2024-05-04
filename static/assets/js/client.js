@@ -126,7 +126,6 @@ function renderCommandForm(agents) {
                   <label for="agent" class="form-label">Select Agent:</label>
                   <select class="form-select" name="agent" id="agent" required>
                     <option value="">Select an agent</option>
-                    <option value="all">All</option>
                     ${Object.entries(agents)
                       .map(
                         ([agentId, _]) => `

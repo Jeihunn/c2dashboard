@@ -73,7 +73,6 @@
                                 <label for="agent" class="form-label">Select Agent:</label>
                                 <select class="form-select" name="agent" id="agent" required>
                                     <option value="">Select an agent</option>
-                                    <option value="all">All</option>
                                     {% for agent_id, agent_info in connected_agents.items %}
                                     <option value="{{ agent_id }}">{{ agent_id }}</option>
                                     {% endfor %}
