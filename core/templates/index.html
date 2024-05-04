@@ -67,7 +67,7 @@
                 <h2 class="mb-4">Command</h2>
                 <div class="row mt-4">
                     <div class="col">
-                        <form method="post" action="{% url 'send_command' %}">
+                        <form method="post" id="commandForm">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="agent" class="form-label">Select Agent:</label>
@@ -91,8 +91,8 @@
             {% endif %}
         </div>
 
+        <div class="response-container my-4">
         {% if command_responses %}
-            <div class="response-container my-4">
                 <div class="response-header">Command Responses:</div>
                 <div class="terminal-output">
                     {% if command_responses %}
@@ -105,8 +105,8 @@
                         <p class="no-response">No command responses available.</p>
                     {% endif %}
                 </div>
-            </div>
-        {% endif %}
+                {% endif %}
+        </div>
 
         <div class="row mt-4">
             <div class="col">
@@ -136,7 +136,9 @@
     <script>
         const csrfToken = "{{ csrf_token }}";
     </script>    
+    <script src="{% static 'assets/js/send-command.js' %}"></script>
     <script src="{% static 'assets/js/client.js' %}"></script>
+    <script src="{% static 'assets/js/command-responses.js' %}"></script>
 </body>
 
 </html>

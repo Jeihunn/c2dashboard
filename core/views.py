@@ -3,6 +3,7 @@ from subprocess import Popen
 from server import HOST, PORT, load_clients, remove_all_clients
 from django.contrib import messages
 from django.core.cache import cache
+from django.http import JsonResponse
 import psutil
 
 # Global variable
@@ -66,10 +67,10 @@ def send_command(request):
         command = request.POST.get('command', '')
         print("Send Command:", command)
         if not command:
-            messages.error(request, 'Command cannot be empty')
-            return redirect('start_server')
+            return JsonResponse({'status': 'error', 'message': 'Command cannot be empty'})
         else:
             command_data = {'agent_id': agent_id, 'command': command}
             cache.set('command_data', command_data)
+            return JsonResponse({'status': 'success'})
 
-    return redirect('start_server')
+    return JsonResponse({'status': 'error', 'message': 'Only POST requests are allowed'}, status=405)

@@ -86,6 +86,17 @@ def send_clients_info_to_group():
     )
 
 
+def send_command_response_to_group():
+    # Send updated command response list to clients via WebSocket
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "command_responses_group",
+        {
+            "type": "send_command_responses"
+        }
+    )
+
+
 class AgentHandler(threading.Thread):
     def __init__(self, agent_socket, agent_address):
         super().__init__()
@@ -105,12 +116,12 @@ class AgentHandler(threading.Thread):
                 if not command:
                     continue
 
-
-                if agent_id != self.agent_id:
+                if agent_id != self.agent_id and agent_id != 'all':
                     command_responses = cache.get('command_responses', {})
                     if self.agent_id in command_responses:
                         del command_responses[self.agent_id]
                         cache.set('command_responses', command_responses)
+                        send_command_response_to_group()
                     continue
 
                 self.agent_socket.send(command.encode())
@@ -118,6 +129,7 @@ class AgentHandler(threading.Thread):
 
                 if command.lower() == "exit":
                     cache.set('command_responses', {})
+                    send_command_response_to_group()
                     break
 
                 response = self.agent_socket.recv(4096).decode()
@@ -125,6 +137,7 @@ class AgentHandler(threading.Thread):
                 responses_dict = cache.get('command_responses', {})
                 responses_dict[self.agent_id] = response
                 cache.set('command_responses', responses_dict)
+                send_command_response_to_group()
                 print("CACHE:", cache.get('command_responses'))
 
                 print(f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
@@ -135,7 +148,7 @@ class AgentHandler(threading.Thread):
             self.agent_socket.close()
             print(f"\nAgent {self.agent_address} disconnected")
             # Remove the client from the list when disconnected
-            remove_all_clients()
+            remove_client(self.agent_id)
 
 
 def main():

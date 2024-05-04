@@ -20,6 +20,8 @@ function onSocketMessage(event) {
   } else {
     showConnectedAgents(agents);
     renderCommandForm(agents);
+    commandForm = document.querySelector("#commandForm");
+    commandForm.addEventListener("submit", handleFormSubmit);
   }
 }
 
@@ -118,7 +120,7 @@ function renderCommandForm(agents) {
           <h2 class="mb-4">Command</h2>
           <div class="row mt-4">
             <div class="col">
-            <form action="/send-command/" method="post">
+            <form method="post" id="commandForm">
             <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
                 <div class="mb-3">
                   <label for="agent" class="form-label">Select Agent:</label>
@@ -150,10 +152,10 @@ function renderCommandForm(agents) {
 }
 
 // WebSocket connection
-const socket = new WebSocket("ws://localhost:8000/ws/clients/");
+const socketClients = new WebSocket("ws://localhost:8000/ws/clients/");
 
 // Event listeners for WebSocket
-socket.onopen = onSocketOpen;
-socket.onmessage = onSocketMessage;
-socket.onclose = onSocketClose;
-socket.onerror = onSocketError;
+socketClients.onopen = onSocketOpen;
+socketClients.onmessage = onSocketMessage;
+socketClients.onclose = onSocketClose;
+socketClients.onerror = onSocketError;
