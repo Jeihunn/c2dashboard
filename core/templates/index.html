@@ -63,20 +63,31 @@
         <!-- Command Form -->
         <div class="command-form-container">
             {% if connected_agents and server_process is not None %}
-                <div class="command-form">
-                    <div class="row mt-4">
-                        <div class="col">
-                            <form method="post" action="{% url 'send_command' %}">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label for="command" class="form-label">Enter command:</label>
-                                    <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Send Command</button>
-                            </form>
-                        </div>
+            <div class="command-form border rounded p-4 mt-4">
+                <h2 class="mb-4">Command</h2>
+                <div class="row mt-4">
+                    <div class="col">
+                        <form method="post" action="{% url 'send_command' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="agent" class="form-label">Select Agent:</label>
+                                <select class="form-select" name="agent" id="agent" required>
+                                    <option value="">Select an agent</option>
+                                    <option value="all">All</option>
+                                    {% for agent_id, agent_info in connected_agents.items %}
+                                    <option value="{{ agent_id }}">{{ agent_id }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="command" class="form-label">Enter Command:</label>
+                                <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Command</button>
+                        </form>
                     </div>
                 </div>
+            </div>
             {% endif %}
         </div>
 

@@ -19,7 +19,7 @@ function onSocketMessage(event) {
     clearCommandForm();
   } else {
     showConnectedAgents(agents);
-    renderCommandForm();
+    renderCommandForm(agents);
   }
 }
 
@@ -111,21 +111,38 @@ function showConnectedAgents(agents) {
 }
 
 // Function to render the command form
-function renderCommandForm() {
+function renderCommandForm(agents) {
   const formHTML = `
-    <div class="command-form">
-      <div class="row mt-4">
-        <div class="col">
-          <form action="/send-command/" method="post">
+    <div class="command-form-container">
+        <div class="command-form border rounded p-4 mt-4">
+          <h2 class="mb-4">Command</h2>
+          <div class="row mt-4">
+            <div class="col">
+            <form action="/send-command/" method="post">
             <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-            <div class="mb-3">
-              <label for="command" class="form-label">Enter command:</label>
-              <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here">
+                <div class="mb-3">
+                  <label for="agent" class="form-label">Select Agent:</label>
+                  <select class="form-select" name="agent" id="agent" required>
+                    <option value="">Select an agent</option>
+                    <option value="all">All</option>
+                    ${Object.entries(agents)
+                      .map(
+                        ([agentId, _]) => `
+                      <option value="${agentId}">${agentId}</option>
+                    `
+                      )
+                      .join("")}
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="command" class="form-label">Enter Command:</label>
+                  <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Command</button>
+              </form>
             </div>
-            <button type="submit" class="btn btn-primary">Send Command</button>
-          </form>
+          </div>
         </div>
-      </div>
     </div>
   `;
 

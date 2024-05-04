@@ -62,12 +62,14 @@ def stop_server(request):
 
 def send_command(request):
     if request.method == 'POST':
+        agent_id = request.POST.get('agent', '')
         command = request.POST.get('command', '')
         print("Send Command:", command)
         if not command:
             messages.error(request, 'Command cannot be empty')
             return redirect('start_server')
         else:
-            cache.set('command', command)
+            command_data = {'agent_id': agent_id, 'command': command}
+            cache.set('command_data', command_data)
 
     return redirect('start_server')

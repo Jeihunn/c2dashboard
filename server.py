@@ -98,14 +98,28 @@ class AgentHandler(threading.Thread):
         print(f"\nNew agent connected: {self.agent_address}")
         try:
             while True:
-                command = cache.get('command', '')
+                command_data = cache.get('command_data', {})
+                agent_id = command_data.get('agent_id', '')
+                command = command_data.get('command', '')
+
                 if not command:
                     continue
+
+
+                if agent_id != self.agent_id:
+                    command_responses = cache.get('command_responses', {})
+                    if self.agent_id in command_responses:
+                        del command_responses[self.agent_id]
+                        cache.set('command_responses', command_responses)
+                    continue
+
                 self.agent_socket.send(command.encode())
-                cache.set('command', '')
+                cache.set('command_data', {})
+
                 if command.lower() == "exit":
                     cache.set('command_responses', {})
                     break
+
                 response = self.agent_socket.recv(4096).decode()
 
                 responses_dict = cache.get('command_responses', {})
