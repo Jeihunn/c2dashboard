@@ -30,12 +30,12 @@ const socketCommandResponses = new WebSocket(
 
 // When the connection is started
 socketCommandResponses.onopen = function (event) {
-  console.log("WebSocket connection established.");
+  console.log("Command responses WebSocket connection opened.");
 };
 
 // When the connection is closed
 socketCommandResponses.onclose = function (event) {
-  console.log("WebSocket connection closed.");
+  console.log("Command responses WebSocket connection closed.");
 };
 
 // When message is received
@@ -49,5 +49,5 @@ socketCommandResponses.onmessage = function (event) {
 
 // When an error occurs
 socketCommandResponses.onerror = function (error) {
-  console.error("WebSocket error:", error);
+  console.error("Command responses WebSocket error:", error);
 };

@@ -3,7 +3,7 @@ const commandFormContainer = document.querySelector(".command-form-container");
 
 // Function to handle when WebSocket connection is opened
 function onSocketOpen(event) {
-  console.log("WebSocket connection opened");
+  console.log("Clients WebSocket connection opened");
 }
 
 // Function to handle incoming messages over WebSocket
@@ -27,12 +27,12 @@ function onSocketMessage(event) {
 
 // Function to handle when WebSocket connection is closed
 function onSocketClose(event) {
-  console.log("WebSocket connection closed");
+  console.log("Clients WebSocket connection closed");
 }
 
 // Function to handle WebSocket errors
 function onSocketError(error) {
-  console.error("WebSocket error:", error);
+  console.error("Clients WebSocket error:", error);
 }
 
 // Function to display "No agents connected" message
