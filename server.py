@@ -116,7 +116,7 @@ class AgentHandler(threading.Thread):
                 if not command:
                     continue
 
-                if agent_id != self.agent_id and agent_id != 'all':
+                if agent_id != self.agent_id:
                     command_responses = cache.get('command_responses', {})
                     if self.agent_id in command_responses:
                         del command_responses[self.agent_id]
@@ -138,7 +138,6 @@ class AgentHandler(threading.Thread):
                 responses_dict[self.agent_id] = response
                 cache.set('command_responses', responses_dict)
                 send_command_response_to_group()
-                print("CACHE:", cache.get('command_responses'))
 
                 print(f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
         except Exception as e:
