@@ -67,10 +67,6 @@ def send_command(request):
         command = request.POST.get('command', '')
         file = request.FILES.get('file', None)
 
-        print("Command:", command)
-        print("File:", file)
-        print("Agent ID:", agent_id)
-
         if not command and not file:
             return JsonResponse({'status': 'error', 'message': 'Command or file cannot be empty'})
         
