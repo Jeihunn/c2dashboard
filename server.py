@@ -112,8 +112,9 @@ class AgentHandler(threading.Thread):
                 command_data = cache.get('command_data', {})
                 agent_id = command_data.get('agent_id', '')
                 command = command_data.get('command', '')
+                file = command_data.get('file', None)
 
-                if not command:
+                if not command and not file:
                     continue
 
                 if agent_id != self.agent_id:
@@ -124,13 +125,20 @@ class AgentHandler(threading.Thread):
                         send_command_response_to_group()
                     continue
 
-                self.agent_socket.send(command.encode())
-                cache.set('command_data', {})
 
-                if command.lower() == "exit":
-                    cache.set('command_responses', {})
-                    send_command_response_to_group()
-                    break
+                if file:
+                    file_data = file.read()
+                    self.agent_socket.sendall(file_data)
+                    cache.set('command_data', {})
+                elif command:
+                    marked_command = marked_command = f"CMD:{command}"
+                    self.agent_socket.send(marked_command.encode())
+                    cache.set('command_data', {})
+
+                    if command.lower() == "exit":
+                        cache.set('command_responses', {})
+                        send_command_response_to_group()
+                        break
 
                 response = self.agent_socket.recv(4096).decode()
 
