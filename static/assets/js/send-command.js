@@ -4,18 +4,22 @@ function handleFormSubmit(event) {
   // Get form data
   const agentId = document.getElementById("agent").value;
   const command = document.getElementById("command").value;
+  const fileInput = document.getElementById("file");
+  const file = fileInput.files[0];
+
+  // Prepare form data
+  const formData = new FormData();
+  formData.append("agent", agentId);
+  formData.append("command", command);
+  formData.append("file", file);
 
   // Sending a POST request with Fetch
   fetch("/send-command/", {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
       "X-CSRFToken": csrfToken,
     },
-    body: new URLSearchParams({
-      agent: agentId,
-      command: command,
-    }),
+    body: formData,
   })
     .then((response) => {
       if (!response.ok) {

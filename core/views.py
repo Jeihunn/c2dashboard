@@ -65,12 +65,17 @@ def send_command(request):
     if request.method == 'POST':
         agent_id = request.POST.get('agent', '')
         command = request.POST.get('command', '')
-        print("Send Command:", command)
-        if not command:
-            return JsonResponse({'status': 'error', 'message': 'Command cannot be empty'})
-        else:
-            command_data = {'agent_id': agent_id, 'command': command}
-            cache.set('command_data', command_data)
-            return JsonResponse({'status': 'success'})
+        file = request.FILES.get('file', None)
+
+        print("Command:", command)
+        print("File:", file)
+        print("Agent ID:", agent_id)
+
+        if not command and not file:
+            return JsonResponse({'status': 'error', 'message': 'Command or file cannot be empty'})
+        
+        command_data = {'agent_id': agent_id, 'command': command, 'file': file}
+        cache.set('command_data', command_data)
+        return JsonResponse({'status': 'success'})
 
     return JsonResponse({'status': 'error', 'message': 'Only POST requests are allowed'}, status=405)
