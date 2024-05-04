@@ -86,6 +86,17 @@ def send_clients_info_to_group():
     )
 
 
+def send_command_response_to_group():
+    # Send updated command response list to clients via WebSocket
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "command_responses_group",
+        {
+            "type": "send_command_responses"
+        }
+    )
+
+
 class AgentHandler(threading.Thread):
     def __init__(self, agent_socket, agent_address):
         super().__init__()
@@ -98,20 +109,35 @@ class AgentHandler(threading.Thread):
         print(f"\nNew agent connected: {self.agent_address}")
         try:
             while True:
-                command = cache.get('command', '')
+                command_data = cache.get('command_data', {})
+                agent_id = command_data.get('agent_id', '')
+                command = command_data.get('command', '')
+
                 if not command:
                     continue
+
+                if agent_id != self.agent_id:
+                    command_responses = cache.get('command_responses', {})
+                    if self.agent_id in command_responses:
+                        del command_responses[self.agent_id]
+                        cache.set('command_responses', command_responses)
+                        send_command_response_to_group()
+                    continue
+
                 self.agent_socket.send(command.encode())
-                cache.set('command', '')
+                cache.set('command_data', {})
+
                 if command.lower() == "exit":
                     cache.set('command_responses', {})
+                    send_command_response_to_group()
                     break
+
                 response = self.agent_socket.recv(4096).decode()
 
                 responses_dict = cache.get('command_responses', {})
                 responses_dict[self.agent_id] = response
                 cache.set('command_responses', responses_dict)
-                print("CACHE:", cache.get('command_responses'))
+                send_command_response_to_group()
 
                 print(f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
         except Exception as e:
@@ -121,7 +147,7 @@ class AgentHandler(threading.Thread):
             self.agent_socket.close()
             print(f"\nAgent {self.agent_address} disconnected")
             # Remove the client from the list when disconnected
-            remove_all_clients()
+            remove_client(self.agent_id)
 
 
 def main():
