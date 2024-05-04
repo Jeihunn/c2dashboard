@@ -1,34 +1,40 @@
 .response-container {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .response-header {
-    font-weight: bold;
-    margin-bottom: 5px;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
 .terminal-output {
-    background-color: #1e1e1e;
-    color: #ffffff;
-    font-family: 'Courier New', Courier, monospace;
-    padding: 10px;
-    border-radius: 5px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  font-family: "Courier New", Courier, monospace;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 .response-list {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 .command {
-    color: #569cd6;
+  color: #569cd6;
 }
 
 .directory {
-    color: #9cdcfe;
+  color: #9cdcfe;
 }
 
 .no-response {
-    color: #999999;
-    font-style: italic;
+  color: #999999;
+  font-style: italic;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 0.8em;
+  margin-top: 0.2em;
 }

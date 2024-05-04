@@ -7,6 +7,37 @@ function handleFormSubmit(event) {
   const fileInput = document.getElementById("file");
   const file = fileInput.files[0];
 
+  // Get error message elements
+  const errorAgent = document.getElementById("errorAgent");
+  const errorCommand = document.getElementById("errorCommand");
+  const errorFile = document.getElementById("errorFile");
+
+  // Reset previous error messages
+  errorAgent.textContent = "";
+  errorCommand.textContent = "";
+  errorFile.textContent = "";
+
+  // Check if agent is selected
+  if (!agentId) {
+    errorAgent.textContent = "Please select an agent.";
+    return;
+  }
+
+  // Check if both command and file are empty
+  if (!command && !file) {
+    errorCommand.textContent =
+      "Command cannot be empty if file is not uploaded.";
+    errorFile.textContent = "Please upload a file or enter a command.";
+    return;
+  }
+
+  // Check if file is uploaded but command is not empty
+  if (file && command) {
+    errorCommand.textContent =
+      "Command cannot be entered if a file is uploaded.";
+    return;
+  }
+
   // Prepare form data
   const formData = new FormData();
   formData.append("agent", agentId);

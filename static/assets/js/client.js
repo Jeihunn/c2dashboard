@@ -134,10 +134,17 @@ function renderCommandForm(agents) {
                       )
                       .join("")}
                   </select>
+                  <div class="errorMessage" id="errorAgent"></div>
                 </div>
                 <div class="mb-3">
                   <label for="command" class="form-label">Enter Command:</label>
-                  <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here" required>
+                  <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here">
+                  <div class="errorMessage" id="errorCommand"></div>
+                </div>
+                <div class="mb-3">
+                  <label for="file" class="form-label">Upload File:</label>
+                  <input type="file" class="form-control" id="file" name="file">
+                  <div class="errorMessage" id="errorFile"></div>
                 </div>
                 <button type="submit" class="btn btn-primary">Send Command</button>
               </form>
