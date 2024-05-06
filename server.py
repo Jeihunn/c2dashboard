@@ -133,9 +133,8 @@ class AgentHandler(threading.Thread):
                     file_name = command[len("DOWNLOAD:"):]
                     self.agent_socket.send(command.encode("utf-8"))
                     cache.set('command_data', {})
-                elif command:
-                    marked_command = f"CMD:{command}"
-                    self.agent_socket.send(marked_command.encode())
+                elif command and command.startswith("CMD:"):
+                    self.agent_socket.send(command.encode())
                     cache.set('command_data', {})
 
                     if command.lower() == "exit":

@@ -3,6 +3,7 @@ function handleFormSubmit(event) {
 
   // Get form data
   const agentId = document.getElementById("agent").value;
+  const commandType = document.getElementById("commandType").value;
   const command = document.getElementById("command").value;
   const fileInput = document.getElementById("file");
   const file = fileInput.files[0];
@@ -41,7 +42,7 @@ function handleFormSubmit(event) {
   // Prepare form data
   const formData = new FormData();
   formData.append("agent", agentId);
-  formData.append("command", command);
+  formData.append("command", `${commandType.toUpperCase()}:${command}`);
   formData.append("file", file);
 
   // Sending a POST request with Fetch
