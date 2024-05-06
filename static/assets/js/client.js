@@ -20,8 +20,12 @@ function onSocketMessage(event) {
   } else {
     showConnectedAgents(agents);
     renderCommandForm(agents);
-    commandForm = document.querySelector("#commandForm");
+
+    let commandForm = document.querySelector("#commandForm");
+    let commandTypeSelect = document.querySelector("#commandType");
+    commandTypeSelect.addEventListener("change", handleCommandTypeChange);
     commandForm.addEventListener("submit", handleFormSubmit);
+    commandForm.addEventListener("reset", handleFormReset);
   }
 }
 

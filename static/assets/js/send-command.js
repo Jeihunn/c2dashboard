@@ -100,7 +100,7 @@ function handleFormReset() {
 // Codes to be run after the page is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   let commandForm = document.querySelector("#commandForm");
-  let commandTypeSelect = document.getElementById("commandType");
+  let commandTypeSelect = document.querySelector("#commandType");
 
   if (commandForm && commandTypeSelect) {
     commandTypeSelect.addEventListener("change", handleCommandTypeChange);

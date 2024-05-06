@@ -137,7 +137,7 @@ class AgentHandler(threading.Thread):
                     self.agent_socket.send(command.encode())
                     cache.set('command_data', {})
 
-                    if command.lower() == "exit":
+                    if command[len("CMD:"):].lower() == "exit":
                         cache.set('command_responses', {})
                         send_command_response_to_group()
                         break
@@ -167,6 +167,7 @@ class AgentHandler(threading.Thread):
             self.agent_socket.close()
             print(f"\nAgent {self.agent_address} disconnected")
             # Remove the client from the list when disconnected
+            print("@@@@@@@@@@@@@@TEST FINALLY@@@@@@@@@@@@@@@@")
             remove_client(self.agent_id)
 
 
