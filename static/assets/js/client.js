@@ -146,7 +146,7 @@ function renderCommandForm(agents) {
                           </select>
                       </div>
                       <div class="col-10">
-                          <label for="command" class="form-label">Enter Command:</label>
+                          <label for="command" class="form-label" id="labelCommand">Enter Command:</label>
                           <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here">
                           <div class="exampleCommand" id="exampleCommand">Example command: <strong>pwd</strong></div>
                           <div class="errorMessage" id="errorCommand"></div>

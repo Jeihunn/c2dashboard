@@ -38,3 +38,10 @@
   font-size: 0.8em;
   margin-top: 0.2em;
 }
+
+.exampleCommand {
+  color: #999999;
+  font-size: 0.8em;
+  margin-top: 0.2em;
+  font-style: italic;
+}
