@@ -125,7 +125,6 @@ class AgentHandler(threading.Thread):
                         send_command_response_to_group()
                     continue
 
-
                 if file:
                     file_data = file.read()
                     self.agent_socket.sendall(file_data)
@@ -147,7 +146,8 @@ class AgentHandler(threading.Thread):
                 cache.set('command_responses', responses_dict)
                 send_command_response_to_group()
 
-                print(f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
+                print(
+                    f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
         except Exception as e:
             print(
                 f"\nError communicating with agent {self.agent_address}: {e}")
