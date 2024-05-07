@@ -167,7 +167,6 @@ class AgentHandler(threading.Thread):
             self.agent_socket.close()
             print(f"\nAgent {self.agent_address} disconnected")
             # Remove the client from the list when disconnected
-            print("@@@@@@@@@@@@@@TEST FINALLY@@@@@@@@@@@@@@@@")
             remove_client(self.agent_id)
 
 
