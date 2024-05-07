@@ -125,29 +125,41 @@ class AgentHandler(threading.Thread):
                         send_command_response_to_group()
                     continue
 
-
                 if file:
                     file_data = file.read()
                     self.agent_socket.sendall(file_data)
                     cache.set('command_data', {})
-                elif command:
-                    marked_command = marked_command = f"CMD:{command}"
-                    self.agent_socket.send(marked_command.encode())
+                elif command and command.startswith("DOWNLOAD:"):
+                    file_name = command[len("DOWNLOAD:"):]
+                    self.agent_socket.send(command.encode("utf-8"))
+                    cache.set('command_data', {})
+                elif command and command.startswith("CMD:"):
+                    self.agent_socket.send(command.encode())
                     cache.set('command_data', {})
 
-                    if command.lower() == "exit":
+                    if command[len("CMD:"):].lower() == "exit":
                         cache.set('command_responses', {})
                         send_command_response_to_group()
                         break
 
                 response = self.agent_socket.recv(4096).decode()
-
                 responses_dict = cache.get('command_responses', {})
+
+                if response.startswith("FILE:"):
+                    file_data = response[len("FILE:"):]
+                    try:
+                        with open(file_name, "wb") as f:
+                            f.write(file_data.encode())
+                        response = f"File '{file_name}' saved successfully"
+                    except Exception as e:
+                        response = f"Error saving file: {e}"
+
                 responses_dict[self.agent_id] = response
                 cache.set('command_responses', responses_dict)
                 send_command_response_to_group()
 
-                print(f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
+                print(
+                    f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
         except Exception as e:
             print(
                 f"\nError communicating with agent {self.agent_address}: {e}")
@@ -155,6 +167,7 @@ class AgentHandler(threading.Thread):
             self.agent_socket.close()
             print(f"\nAgent {self.agent_address} disconnected")
             # Remove the client from the list when disconnected
+            print("@@@@@@@@@@@@@@TEST FINALLY@@@@@@@@@@@@@@@@")
             remove_client(self.agent_id)
 
 

