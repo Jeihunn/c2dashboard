@@ -110,21 +110,24 @@
         </div>
 
         <div class="response-container my-4">
-        {% if command_responses %}
-                <div class="response-header">Command Responses:</div>
-                <div class="terminal-output">
-                    {% if command_responses %}
-                        <ul class="response-list">
-                            {% for client_address, directory_path in command_responses.items %}
-                                <li><span class="command">{{ client_address }}:</span> <span class="directory">{{ directory_path }}</span></li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="no-response">No command responses available.</p>
-                    {% endif %}
-                </div>
+            {% if command_responses %}
+            <div class="response-header">Command Responses:</div>
+            <div class="terminal-output">
+                {% if command_responses %}
+                    <ul class="response-list">
+                        {% for client_address, directory_path in command_responses.items %}
+                            <li>
+                                <span class="command">{{ client_address }}:</span>
+                                <span class="directory">{{ directory_path|linebreaks }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="no-response">No command responses available.</p>
                 {% endif %}
-        </div>
+            </div>
+            {% endif %}
+        </div>        
 
         <div class="row mt-4">
             <div class="col">

@@ -58,7 +58,8 @@ def main():
                         agent_socket.send("FILE:".encode())
                         agent_socket.send(file_data)
                 else:
-                    agent_socket.send(f"File not found: '{file_name}'".encode())
+                    agent_socket.send(
+                        f"File not found: '{file_name}'".encode())
             else:
                 output = save_received_file(data, "received_file")
                 agent_socket.send(output.encode())

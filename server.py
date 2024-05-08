@@ -2,6 +2,7 @@ import os
 import socket
 import threading
 import json
+import logging
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.core.cache import cache
@@ -11,6 +12,10 @@ PORT = 8888  # Set your port
 
 # File name
 CLIENTS_FILE = "connected_clients.json"
+
+# Configure logging
+logging.basicConfig(filename='server.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 cache.set('command_responses', {})
@@ -49,6 +54,7 @@ def add_client(client_id, client_socket, username, client_os):
     }
     clients[client_id] = client_info
     save_clients(clients)
+    logging.info(f"Connected agent: {client_id}")
     print(f"\nConnected agents: {list_clients()}")
     send_clients_info_to_group()
 
@@ -58,6 +64,7 @@ def remove_client(client_id):
     if client_id in clients:
         del clients[client_id]
         save_clients(clients)
+        logging.info(f"\nConnected agents: {list_clients()}")
         print(f"\nConnected agents: {list_clients()}")
         send_clients_info_to_group()
 
@@ -66,6 +73,7 @@ def remove_all_clients():
     clients = load_clients()
     clients.clear()
     save_clients(clients)
+    logging.info(f"\nConnected agents: {list_clients()}")
     print(f"\nConnected agents: {list_clients()}")
     send_clients_info_to_group()
 
@@ -106,6 +114,7 @@ class AgentHandler(threading.Thread):
         self.agent_id = f"{agent_address[0]}:{agent_address[1]}"
 
     def run(self):
+        logging.info(f"\nNew agent connected: {self.agent_address}")
         print(f"\nNew agent connected: {self.agent_address}")
         try:
             while True:
@@ -158,16 +167,21 @@ class AgentHandler(threading.Thread):
                 cache.set('command_responses', responses_dict)
                 send_command_response_to_group()
 
+                logging.info(
+                    f"\nResponse from agent {self.agent_address}: {response}")
                 print(
                     f"\n{'=' * 20}\nResponse from agent {self.agent_address}:\n{response}\n{'=' * 20}\n")
         except Exception as e:
+            logging.error(
+                f"\nError communicating with agent {self.agent_address}: {e}"
+            )
             print(
                 f"\nError communicating with agent {self.agent_address}: {e}")
         finally:
             self.agent_socket.close()
+            logging.info(f"\nAgent {self.agent_address} disconnected")
             print(f"\nAgent {self.agent_address} disconnected")
             # Remove the client from the list when disconnected
-            print("@@@@@@@@@@@@@@TEST FINALLY@@@@@@@@@@@@@@@@")
             remove_client(self.agent_id)
 
 
@@ -178,6 +192,7 @@ def main():
         remove_all_clients()
         server_socket.bind((HOST, PORT))
         server_socket.listen(5)
+        logging.info(f"\nServer listening on {HOST}:{PORT}")
         print(f"\nServer listening on {HOST}:{PORT}")
         while True:
             agent_socket, agent_address = server_socket.accept()
@@ -189,6 +204,7 @@ def main():
             add_client(agent_handler.agent_id,
                        agent_socket, username, client_os)
     except KeyboardInterrupt:
+        logging.info("\nServer shutting down...")
         print("\nServer shutting down...")
     finally:
         server_socket.close()

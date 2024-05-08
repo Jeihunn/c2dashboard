@@ -2,7 +2,7 @@ function updateResponseContainer(commandResponses) {
   const responseContainer = document.querySelector(".response-container");
 
   // If there are command responses
-  if (commandResponses) {
+  if (commandResponses && Object.keys(commandResponses).length > 0) {
     let htmlContent = '<div class="response-header">Command Responses:</div>';
     htmlContent += '<div class="terminal-output">';
     htmlContent += '<ul class="response-list">';
@@ -10,7 +10,9 @@ function updateResponseContainer(commandResponses) {
     // Generate HTML content for each command response
     Object.entries(commandResponses).forEach(
       ([clientAddress, directoryPath]) => {
-        htmlContent += `<li><span class="command">${clientAddress}:</span> <span class="directory">${directoryPath}</span></li>`;
+        // Split directoryPath by newline characters and join them with <br> tags
+        const formattedDirectoryPath = directoryPath.split("\n").join("<br>");
+        htmlContent += `<li><span class="command">${clientAddress}:</span> <br> <span class="directory">${formattedDirectoryPath}</span></li>`;
       }
     );
 
