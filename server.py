@@ -7,7 +7,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.core.cache import cache
 
-HOST = "0.0.0.0"  # Set your host
+HOST = "192.168.110.107"  # Set your host
 PORT = 8888  # Set your port
 
 # File name

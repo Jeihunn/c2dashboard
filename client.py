@@ -24,7 +24,7 @@ def save_received_file(data, file_name):
 
 
 def main():
-    host = "127.0.0.1"
+    host = "192.168.110.107"
     port = 8888
 
     try:
