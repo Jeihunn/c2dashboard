@@ -1,6 +1,6 @@
 # C2 Dashboard
 
-Short description or introduction of your Django project.
+This project is about Command and Control server by Using Django framework.
 
 ## Table of Contents
 
@@ -40,7 +40,7 @@ Short description or introduction of your Django project.
 
 Explain how to use your Django project. Provide examples if necessary.
 
-For the usage just watch this video. 
+For the usage just watch this [video](https://www.awesomescreenshot.com/video/27582945?key=69a8e94579a20e4ea5df60501a9d7d6e)
 
 1. Run the development server:
 
